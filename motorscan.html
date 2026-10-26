@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MotorScan</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#0E1013">
+    <meta name="description" content="MotorScan: diagnóstico automotriz interactivo.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%A7%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="./css/style.css">
+  </head>
+  <body>
+    <main class="app">
+      <header class="brand">
+        <div class="top-row">
+          <span class="beta-badge"><span class="dot"></span>Versión beta</span>
+          <button class="lang-selector" type="button" aria-label="Cambiar idioma" title="Próximamente" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+            <span>ES</span>
+          </button>
+        </div>
+        <div class="eyebrow">MotorScan</div>
+        <h1 class="title">¿Qué le pasa a tu auto?</h1>
+        <p class="subtitle">Responde un par de preguntas sobre lo que notaste y te decimos la causa más probable.</p>
+      </header>
+
+      <section class="casing" aria-label="Diagnóstico MotorScan">
+        <div class="screen">
+          <div class="bezel">
+            <div class="leds">
+              <span class="led led-bad"></span>
+              <span class="led led-accent"></span>
+              <span class="led led-ok"></span>
+            </div>
+            <div class="bezel-label">MOTORSCAN 1.0</div>
+          </div>
+          <div class="screen-inner" id="screenInner">
+            <div class="gauge-wrap" data-diagnostic-gauge aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">0%</div>
+
+            <section id="vehicleSelection" aria-label="Tipo de vehículo">
+              <div class="panel-eyebrow">Antes de empezar</div>
+              <h2 class="panel-title">¿Qué tipo de auto tienes?</h2>
+              <div class="vehicle-cards">
+                <button class="vehicle-card" type="button" data-vehicle-type="combustion">
+                  <span class="vehicle-card-emoji">⛽</span>
+                  <span class="vehicle-card-body"><strong class="vehicle-card-title">A combustión</strong><small class="vehicle-card-desc">Bencina o diésel.</small></span>
+                  <span aria-hidden="true">→</span>
+                </button>
+                <button class="vehicle-card" type="button" data-vehicle-type="hibrido">
+                  <span class="vehicle-card-emoji">🔋</span>
+                  <span class="vehicle-card-body"><strong class="vehicle-card-title">Híbrido</strong><small class="vehicle-card-desc">Combustión + eléctrico.</small></span>
+                  <span aria-hidden="true">→</span>
+                </button>
+                <button class="vehicle-card" type="button" data-vehicle-type="electrico">
+                  <span class="vehicle-card-emoji">⚡</span>
+                  <span class="vehicle-card-body"><strong class="vehicle-card-title">100% eléctrico</strong><small class="vehicle-card-desc">Con batería de alto voltaje.</small></span>
+                  <span aria-hidden="true">→</span>
+                </button>
+              </div>
+            </section>
+
+            <section id="questionContainer" aria-live="polite" hidden>
+              <div class="panel-eyebrow" data-diagnostic-eyebrow></div>
+              <h2 class="panel-title" data-diagnostic-question></h2>
+              <div class="options" data-diagnostic-options></div>
+            </section>
+
+            <section id="resultContainer" data-diagnostic-result aria-live="assertive" hidden></section>
+            <div id="errorContainer" class="error-box" data-diagnostic-error hidden role="alert"></div>
+          </div>
+          <p class="foot-label">
+            ESTO ES UNA ORIENTACIÓN — NO REEMPLAZA LA REVISIÓN DE UN MECÁNICO
+            <span class="developer-signature">Desarrollado por Diego Bravo</span>
+          </p>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="./js/app.js"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw.js").catch((error) => {
+            console.error("Fallo al registrar el Service Worker:", error);
+          });
+        });
+      }
+      window.setTimeout(() => {
+        document.getElementById("screenInner")?.classList.remove("booting");
+      }, 400);
+    </script>
+  </body>
+</html>

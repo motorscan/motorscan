@@ -1,0 +1,8 @@
+{
+  "name": "motorscan-core",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test js/engine.test.js"
+  }
+}

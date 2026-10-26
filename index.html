@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0E1013">
+    <meta name="description" content="Diagnóstico automotriz inteligente.">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>MotorScan</title>
+  </head>
+  <body>
+    <main>
+      <h1>MotorScan</h1>
+      <p>Diagnóstico automotriz inteligente en tu dispositivo.</p>
+      <a href="./motorscan.html">Comenzar diagnóstico</a>
+    </main>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./sw.js").catch((error) => {
+          console.error("No se pudo registrar el Service Worker:", error);
+        });
+      }
+    </script>
+  </body>
+</html>

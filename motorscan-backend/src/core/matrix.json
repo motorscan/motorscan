@@ -1,0 +1,31 @@
+{
+  "sintomas": [
+    { "id": "motor_no_arranca", "titulo": "El motor no arranca" },
+    { "id": "perdida_potencia", "titulo": "Pérdida de potencia" },
+    { "id": "pedal_freno_al_fondo", "titulo": "El pedal de freno se va al fondo" },
+    { "id": "ruido_bomba_combustible", "titulo": "Ruido anormal de la bomba de combustible" }
+  ],
+  "fallas": [
+    {
+      "id": "filtro_combustible_tapado",
+      "titulo": "Filtro de combustible obstruido",
+      "gravedad": { "nivel": "media", "es_critica_seguridad": false, "mensaje_alerta_inmediata": "" },
+      "aplica_a": { "v_tipo_vehiculo": ["combustion", "hibrido"] },
+      "pesos_sintomas": { "motor_no_arranca": 0.8, "perdida_potencia": 1, "ruido_bomba_combustible": 0.6 }
+    },
+    {
+      "id": "falla_sistema_frenos",
+      "titulo": "Falla en el sistema hidráulico de frenos",
+      "gravedad": { "nivel": "critica", "es_critica_seguridad": true, "mensaje_alerta_inmediata": "No conduzca el vehículo y solicite asistencia profesional." },
+      "aplica_a": { "v_tipo_vehiculo": ["combustion", "electrico", "hibrido"] },
+      "pesos_sintomas": { "pedal_freno_al_fondo": 1, "perdida_potencia": -0.1 }
+    },
+    {
+      "id": "falla_bateria_alta_tension",
+      "titulo": "Anomalía en la batería de alta tensión",
+      "gravedad": { "nivel": "alta", "es_critica_seguridad": true, "mensaje_alerta_inmediata": "Aísle el vehículo y solicite asistencia especializada." },
+      "aplica_a": { "v_tipo_vehiculo": ["electrico", "hibrido"] },
+      "pesos_sintomas": { "motor_no_arranca": 0.8, "perdida_potencia": 0.7 }
+    }
+  ]
+}
