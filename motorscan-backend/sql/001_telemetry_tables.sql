@@ -25,6 +25,12 @@ create table if not exists public.historial_diagnosticos (
   session_id varchar(128) not null
 );
 
+create index if not exists idx_historial_session_id
+  on public.historial_diagnosticos (session_id);
+
+create index if not exists idx_historial_fecha
+  on public.historial_diagnosticos (fecha desc);
+
 alter table public.eventos_telemetria enable row level security;
 alter table public.errores_app enable row level security;
 alter table public.historial_diagnosticos enable row level security;

@@ -203,7 +203,10 @@ Estas rutas son llamadas por el frontend y escriben mediante la Service Role Key
 ```http
 POST /api/telemetria/evento
 POST /api/telemetria/error
+POST /api/telemetria/historial
 ```
+
+`/api/telemetria/historial` recibe `tipo_vehiculo`, `sintomas_reportados`, `falla_resultante` y `session_id`. El frontend guarda primero en IndexedDB y luego intenta sincronizar en segundo plano. Si Supabase no está configurado, responde `202` y el registro permanece local.
 
 No deben exponerse credenciales de Supabase al navegador. Si Supabase no está configurado correctamente, el diagnóstico principal debe seguir considerándose independiente de la telemetría.
 

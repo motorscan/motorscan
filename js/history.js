@@ -2,6 +2,42 @@ const DATABASE_NAME = "MotorScanDB";
 const DATABASE_VERSION = 1;
 const STORE_NAME = "diagnosticos";
 
+async function sincronizarHistorialRemoto(diagnostico, sessionId) {
+  if (typeof sessionId !== "string" || sessionId.length === 0) return;
+
+  const configuredApiUrl = globalThis.MOTORSCAN_API_URL;
+  const apiUrl =
+    typeof configuredApiUrl === "string" && configuredApiUrl.trim()
+      ? configuredApiUrl.replace(/\/$/, "")
+      : "/api";
+  const falla = typeof diagnostico.falla === "string"
+    ? diagnostico.falla.trim()
+    : "";
+  if (!falla) return;
+
+  try {
+    const response = await fetch(`${apiUrl}/telemetria/historial`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify({
+        tipo_vehiculo: diagnostico.tipo_vehiculo,
+        sintomas_reportados: diagnostico.respuestas ?? [],
+        falla_resultante: falla,
+        session_id: sessionId
+      })
+    });
+    if (!response.ok) {
+      throw new Error(`El servidor respondió con HTTP ${response.status}.`);
+    }
+  } catch (error) {
+    console.warn(
+      "[MotorScan] Historial guardado solo en local (sin conexión):",
+      error instanceof Error ? error.message : error
+    );
+  }
+}
+
 function getIndexedDB() {
   if (typeof indexedDB === "undefined") {
     throw new Error("IndexedDB no está disponible en este entorno.");
@@ -40,7 +76,7 @@ export async function solicitarPersistencia() {
   return navigator.storage.persist();
 }
 
-export async function guardarDiagnostico(diagnostico) {
+export async function guardarDiagnostico(diagnostico, sessionId) {
   if (diagnostico === null || typeof diagnostico !== "object") {
     throw new TypeError("El diagnóstico debe ser un objeto.");
   }
@@ -53,7 +89,10 @@ export async function guardarDiagnostico(diagnostico) {
       creado_en: diagnostico.creado_en ?? new Date().toISOString()
     });
 
-    request.onsuccess = () => resolve(request.result);
+    request.onsuccess = () => {
+      void sincronizarHistorialRemoto(diagnostico, sessionId);
+      resolve(request.result);
+    };
     request.onerror = () =>
       reject(request.error ?? new Error("No se pudo guardar el diagnóstico."));
     transaction.onabort = () =>

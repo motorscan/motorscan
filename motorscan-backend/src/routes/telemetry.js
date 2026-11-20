@@ -35,6 +35,55 @@ function validateError(body) {
   return errors;
 }
 
+function validateHistory(body) {
+  const errors = [];
+  if (!isRecord(body) || typeof body.tipo_vehiculo !== "string" ||
+      body.tipo_vehiculo.trim().length < 1 || body.tipo_vehiculo.length > 30) {
+    errors.push("tipo_vehiculo debe ser un texto de 1 a 30 caracteres.");
+  }
+  if (!Array.isArray(body?.sintomas_reportados) ||
+      body.sintomas_reportados.some((symptom) =>
+        typeof symptom !== "string" || symptom.length < 1 || symptom.length > 100
+      )) {
+    errors.push("sintomas_reportados debe ser un array de textos válidos.");
+  }
+  if (!isRecord(body) || typeof body.falla_resultante !== "string" ||
+      body.falla_resultante.trim().length < 1 || body.falla_resultante.length > 100) {
+    errors.push("falla_resultante debe ser un texto de 1 a 100 caracteres.");
+  }
+  if (typeof body?.session_id !== "string" ||
+      body.session_id.length < 1 || body.session_id.length > 128) {
+    errors.push("session_id debe ser un texto de 1 a 128 caracteres.");
+  }
+  return errors;
+}
+
+router.post("/historial", async (request, response) => {
+  const errors = validateHistory(request.body);
+  if (errors.length > 0) {
+    response.status(400).json({ error: "Payload de historial inválido.", detalles: errors });
+    return;
+  }
+  if (!supabase) {
+    response.status(202).json({ status: "omitted", reason: "telemetry_disabled" });
+    return;
+  }
+  try {
+    const { error } = await supabase.from("historial_diagnosticos").insert({
+      tipo_vehiculo: request.body.tipo_vehiculo.trim(),
+      sintomas_reportados: request.body.sintomas_reportados,
+      falla_resultante: request.body.falla_resultante.trim(),
+      session_id: request.body.session_id
+    });
+    if (error) throw error;
+  } catch (error) {
+    console.error("Error guardando historial:", error.message);
+    response.status(500).json({ error: "No se pudo guardar el historial." });
+    return;
+  }
+  response.status(201).json({ status: "saved" });
+});
+
 router.post("/evento", async (request, response) => {
   const errors = validateEvent(request.body);
   if (errors.length > 0) {

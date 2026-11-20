@@ -143,7 +143,7 @@ export function crearControlador(root = document) {
         respuestas: [...state.respuestas],
         falla: data.falla_ganadora?.id ?? null,
         alerta_critica: data.alerta_critica
-      });
+      }, sessionId);
       return;
     }
     if (data.siguiente_pregunta) {
