@@ -11,9 +11,10 @@ function evaluar(payload) {
   const fallasPuntuadas = engine.calcularPuntajes(payload.respuestas, fallasCompatibles);
   const seguridad = engine.verificarSeguridadCritica(fallasPuntuadas, payload.respuestas);
   const certeza = engine.evaluarCerteza(fallasPuntuadas);
+  const sintomasRespondidos = payload.sintomas_respondidos ?? payload.respuestas;
   const siguientePregunta = seguridad.alerta_critica
     ? null
-    : engine.obtenerSiguientePregunta(fallasPuntuadas, payload.respuestas);
+    : engine.obtenerSiguientePregunta(fallasPuntuadas, sintomasRespondidos);
   const resultadoFinal = seguridad.alerta_critica
     ? seguridad.fallas_criticas[0] ?? certeza.lider
     : siguientePregunta

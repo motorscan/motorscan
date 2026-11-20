@@ -1,6 +1,10 @@
 import { guardarDiagnostico, solicitarPersistencia } from "./history.js";
 
-export const API_URL = "http://localhost:3000/api";
+const configuredApiUrl = globalThis.MOTORSCAN_API_URL;
+export const API_URL =
+  typeof configuredApiUrl === "string" && configuredApiUrl.trim()
+    ? configuredApiUrl.replace(/\/$/, "")
+    : "/api";
 
 const SELECTORS = {
   vehicleButtons: "[data-vehicle-type]",
@@ -109,6 +113,7 @@ export function crearControlador(root = document) {
   const state = {
     tipoVehiculo: null,
     respuestas: [],
+    sintomasRespondidos: [],
     ultimoResultado: null
   };
 
@@ -152,11 +157,13 @@ export function crearControlador(root = document) {
   const iniciar = async (tipoVehiculo) => {
     state.tipoVehiculo = tipoVehiculo;
     state.respuestas = [];
+    state.sintomasRespondidos = [];
     state.ultimoResultado = null;
     await enviarEvento("Vehiculo Seleccionado", { tipo: tipoVehiculo }, sessionId);
     const data = await postJson("/diagnostico/iniciar", {
       tipo_vehiculo: tipoVehiculo,
-      respuestas: []
+      respuestas: [],
+      sintomas_respondidos: []
     });
     await procesarRespuestaServidor(data);
   };
@@ -165,6 +172,9 @@ export function crearControlador(root = document) {
     const button = event.target.closest("[data-answer][data-symptom-id]");
     if (!button) return;
     const symptomId = button.dataset.symptomId;
+    if (!state.sintomasRespondidos.includes(symptomId)) {
+      state.sintomasRespondidos.push(symptomId);
+    }
     if (button.dataset.answer === "si" && !state.respuestas.includes(symptomId)) {
       state.respuestas.push(symptomId);
     }
@@ -174,7 +184,8 @@ export function crearControlador(root = document) {
     }, sessionId);
     const data = await postJson("/diagnostico/responder", {
       tipo_vehiculo: state.tipoVehiculo,
-      respuestas: [...state.respuestas]
+      respuestas: [...state.respuestas],
+      sintomas_respondidos: [...state.sintomasRespondidos]
     });
     await procesarRespuestaServidor(data);
   };

@@ -22,5 +22,20 @@ export function validarSolicitudDiagnostico(payload, matrix) {
       }
     }
   }
+  if (payload.sintomas_respondidos !== undefined) {
+    if (!Array.isArray(payload.sintomas_respondidos)) {
+      errors.push("sintomas_respondidos debe ser un array.");
+    } else {
+      const uniqueAnsweredSymptoms = new Set(payload.sintomas_respondidos);
+      if (uniqueAnsweredSymptoms.size !== payload.sintomas_respondidos.length) {
+        errors.push("sintomas_respondidos no debe contener IDs duplicados.");
+      }
+      for (const symptomId of payload.sintomas_respondidos) {
+        if (typeof symptomId !== "string" || !symptomIds.has(symptomId)) {
+          errors.push(`Síntoma respondido no válido: ${String(symptomId)}.`);
+        }
+      }
+    }
+  }
   return errors;
 }

@@ -27,7 +27,7 @@ MotorScan es una PWA de diagnóstico automotriz orientativo. El usuario seleccio
 - Configurar un proyecto Supabase real y ejecutar el SQL de [sql/001_telemetry_tables.sql](./motorscan-backend/sql/001_telemetry_tables.sql).
 - Sustituir los placeholders del `.env` por secretos reales gestionados por el proveedor de despliegue.
 - Servir frontend y backend exclusivamente sobre HTTPS.
-- Cambiar `API_URL` de desarrollo en [js/app.js](./js/app.js) por la URL HTTPS del backend.
+- Servir el frontend y el backend bajo el mismo origen para usar `/api`, o definir `globalThis.MOTORSCAN_API_URL` antes de cargar [js/app.js](./js/app.js) cuando estén separados.
 - Configurar dominios de producción en `ALLOWED_ORIGINS`.
 - Revisar límites, retención y consentimiento de telemetría.
 - Añadir pruebas de integración automatizadas para API, Supabase y Service Worker.
@@ -93,7 +93,7 @@ SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
-El backend exige ambas variables de Supabase para arrancar. Para una prueba real de persistencia deben corresponder a un proyecto Supabase válido.
+Supabase es opcional para el diagnóstico. Si faltan esas variables, el backend arranca y omite la telemetría; para persistencia real deben corresponder a un proyecto Supabase válido.
 
 ### 3. Crear las tablas de Supabase
 
@@ -170,9 +170,12 @@ Content-Type: application/json
 ```json
 {
   "tipo_vehiculo": "electrico",
-  "respuestas": ["motor_no_arranca"]
+  "respuestas": ["motor_no_arranca"],
+  "sintomas_respondidos": ["motor_no_arranca", "perdida_potencia"]
 }
 ```
+
+`respuestas` contiene solo síntomas contestados afirmativamente y se usa para puntuar. `sintomas_respondidos` contiene todos los síntomas ya contestados, incluidos los que recibieron una respuesta negativa, para evitar repetir preguntas.
 
 Respuesta intermedia:
 

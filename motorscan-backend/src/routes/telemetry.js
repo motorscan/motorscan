@@ -41,6 +41,10 @@ router.post("/evento", async (request, response) => {
     response.status(400).json({ error: "Solicitud inválida.", detalles: errors });
     return;
   }
+  if (!supabase) {
+    response.status(202).json({ registrado: false, omitido: true });
+    return;
+  }
   try {
     const { error } = await supabase.from("eventos_telemetria").insert({
       tipo_evento: request.body.tipo_evento,
@@ -60,6 +64,10 @@ router.post("/error", async (request, response) => {
   const errors = validateError(request.body);
   if (errors.length > 0) {
     response.status(400).json({ error: "Solicitud inválida.", detalles: errors });
+    return;
+  }
+  if (!supabase) {
+    response.status(202).json({ registrado: false, omitido: true });
     return;
   }
   try {

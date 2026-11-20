@@ -40,6 +40,20 @@ test("calcula el delta con síntomas contradictorios y propone un desempate", ()
   assert.equal(pregunta, "perdida_potencia");
 });
 
+test("no repite una pregunta respondida con No", () => {
+  const fallas = engine.filtrarFallas(matrix.fallas, "electrico");
+  const puntuadas = engine.calcularPuntajes([], fallas);
+
+  assert.equal(
+    engine.obtenerSiguientePregunta(puntuadas, []),
+    "motor_no_arranca"
+  );
+  assert.notEqual(
+    engine.obtenerSiguientePregunta(puntuadas, ["motor_no_arranca"]),
+    "motor_no_arranca"
+  );
+});
+
 test("levanta alerta crítica aunque la certeza general sea baja", () => {
   const fallas = engine.filtrarFallas(matrix.fallas, "electrico");
   const respuestas = ["pedal_freno_al_fondo"];
